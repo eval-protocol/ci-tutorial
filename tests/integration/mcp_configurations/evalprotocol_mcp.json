@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "eval-protocol-docs": {
+      "url": "https://evalprotocol.io/mcp"
+    },
+    "eval-protocol-deep-wiki": {
+      "url": "https://mcp.deepwiki.com/"
+    }
+  }
+}

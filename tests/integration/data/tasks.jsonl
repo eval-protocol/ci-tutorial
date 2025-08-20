@@ -1,0 +1,3 @@
+{"task": "validate JSON schema of an LLM response"}
+{"task": "evaluate code generation quality"}
+{"task": "write an eval for hallucination detection"}

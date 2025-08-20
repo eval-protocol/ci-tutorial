@@ -1,0 +1,36 @@
+name: Nightly E2E
+
+on:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: |
+          uv venv
+          . .venv/bin/activate
+          uv pip install -e .[test]
+      - name: Run E2E evals
+        env:
+          FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
+          EP_PRINT_SUMMARY: "1"
+          EP_SUMMARY_JSON: "artifacts/summaries/"
+        run: |
+          . .venv/bin/activate
+          pytest -q -m e2e --maxfail=1
+      - name: Upload summary artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-summaries
+          path: artifacts/summaries
