@@ -8,7 +8,7 @@ from eval_protocol.models import EvaluateResult, EvaluationRow
 from eval_protocol.pytest import evaluation_test, AgentRolloutProcessor
 
 from app import draft_eval
-from app.prompts import generate_messages
+from app.prompts import generate_draft_eval_messages
 
 
 def adapter_examples_to_rows(rows: List[Dict[str, Any]]) -> List[EvaluationRow]:
@@ -27,9 +27,9 @@ def _write_dataset_if_missing(path: str) -> None:
         return [{"role": m.role, "content": m.content} for m in msgs]
 
     examples = [
-        {"messages": generate_messages("Write a JSON schema validation eval")},
-        {"messages": generate_messages("Show how to use num_runs and aggregation")},
-        {"messages": generate_messages("Explain rollout processor differences")},
+        {"messages": generate_draft_eval_messages("Write a JSON schema validation eval")},
+        {"messages": generate_draft_eval_messages("Show how to use num_runs and aggregation")},
+        {"messages": generate_draft_eval_messages("Explain rollout processor differences")},
     ]
     with open(path, "w", encoding="utf-8") as f:
         for ex in examples:

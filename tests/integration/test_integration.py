@@ -7,7 +7,7 @@ from eval_protocol.models import EvaluationRow, EvaluateResult, Message, MetricR
 from eval_protocol.pytest import evaluation_test, AgentRolloutProcessor
 from eval_protocol.dataset_logger import default_logger
 
-from app.prompts import generate_messages
+from app.prompts import generate_draft_eval_messages
 
 skip_reason = "Skipping integration test: FIREWORKS_API_KEY not set"
 
@@ -37,7 +37,7 @@ def eval_author_dataset_adapter(rows: List[Dict[str, Any]]) -> List[EvaluationRo
     dataset: List[EvaluationRow] = []
     for row_data in rows:
         task = row_data["task"]
-        messages = generate_messages(task=task)
+        messages = generate_draft_eval_messages(task=task)
         ep_messages = [Message(role=m["role"], content=m["content"]) for m in messages]
         dataset.append(EvaluationRow(messages=ep_messages))
     return dataset

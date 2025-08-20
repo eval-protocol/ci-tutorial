@@ -108,8 +108,19 @@ def build_eval_author_user_prompt(task: str) -> str:
     )
 
 
-def generate_messages(task: str) -> list[dict[str, str]]:
+def generate_draft_eval_messages(task: str) -> list[dict[str, str]]:
     return [
         {"role": "system", "content": build_eval_author_system_prompt()},
         {"role": "user", "content": build_eval_author_user_prompt(task)},
+    ]
+
+
+def build_extract_code_system_prompt() -> str:
+    return """Your job is to extract the final code output from a string. You will be given a string and you will need to extract the final code output from it."""
+
+
+def generate_extract_code_messages(text: str) -> list[dict[str, str]]:
+    return [
+        {"role": "system", "content": build_extract_code_system_prompt()},
+        {"role": "user", "content": text},
     ]

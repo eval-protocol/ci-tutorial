@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List
 
 import litellm
 
-from .prompts import generate_messages
+from .prompts import generate_draft_eval_messages, generate_extract_code_messages
 
 
 def _extract_assistant_content(result: Any) -> str:
@@ -58,7 +58,17 @@ def draft_eval(task: str) -> str:
 
     Returns assistant text content. Raise a clear error if no provider is configured.
     """
-    messages = generate_messages(task)
+    messages = generate_draft_eval_messages(task)
+    litellm_model = os.getenv("LITELLM_MODEL", "fireworks_ai/accounts/fireworks/models/gpt-oss-120b")
+    result = litellm.completion(model=litellm_model, messages=messages)
+    return _extract_assistant_content(result)
+
+
+def extract_code(text: str) -> str:
+    """
+    Extract code from a string.
+    """
+    messages = generate_extract_code_messages(text)
     litellm_model = os.getenv("LITELLM_MODEL", "fireworks_ai/accounts/fireworks/models/gpt-oss-120b")
     result = litellm.completion(model=litellm_model, messages=messages)
     return _extract_assistant_content(result)
