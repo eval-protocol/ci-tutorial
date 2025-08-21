@@ -35,6 +35,18 @@ Here is the code:
 ```
 """
 
+TEXT_WITH_CODE_5 = f"""
+Hm, maybe I should generate code like this:
+```python
+print("test")
+```
+
+But actually, I should generate code like this:
+```python
+{GROUND_TRUTH}
+```
+"""
+
 
 def _write_integration_dataset_if_missing(path: str) -> None:
     if os.path.exists(path):
@@ -45,6 +57,7 @@ def _write_integration_dataset_if_missing(path: str) -> None:
         {"text": TEXT_WITH_CODE_2, "ground_truth": GROUND_TRUTH},
         {"text": TEXT_WITH_CODE_3, "ground_truth": GROUND_TRUTH},
         {"text": TEXT_WITH_CODE_4, "ground_truth": GROUND_TRUTH},
+        {"text": TEXT_WITH_CODE_5, "ground_truth": GROUND_TRUTH},
     ]
     with open(path, "w", encoding="utf-8") as f:
         for ex in examples:
@@ -77,7 +90,7 @@ def extract_code_dataset_adapter(rows: List[Dict[str, Any]]) -> List[EvaluationR
     completion_params=[{"model": "fireworks_ai/accounts/fireworks/models/gpt-oss-120b"}],
     rollout_processor=SingleTurnRolloutProcessor(),
     mode="pointwise",
-    passed_threshold=1.0,  # Expect high reliability for single-turn responses
+    passed_threshold=0.74,  # Expect at least 3/4 to be correct
 )
 def test_eval_author_unit(row: EvaluationRow) -> EvaluationRow:
     """

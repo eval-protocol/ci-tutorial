@@ -13,3 +13,6 @@ dependencies = [
 test = [
     "pytest>=8.0.0",
 ]
+
+[tool.uv.sources]
+eval-protocol = { path = "../python-sdk" }

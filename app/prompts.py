@@ -116,7 +116,20 @@ def generate_draft_eval_messages(task: str) -> list[dict[str, str]]:
 
 
 def build_extract_code_system_prompt() -> str:
-    return """Your job is to extract the final code output from a string. You will be given a string and you will need to extract the final code output from it."""
+    return """Your job is to extract the final code output from a string. You will be given a string and you will need to strip everything but the final code output from it. Here are some examples:
+
+1. You should return: "print("Hello, world!")" if the input is:
+```python
+print("Hello, world!")
+```
+2. You should return: "print("Hello, world!")" if the input is just the code itself like "print("Hello, world!")"
+3. You should return: "print("Hello, world!")" if the input is:
+Here is the code:
+
+```python
+print("Hello, world!")
+```
+"""
 
 
 def generate_extract_code_messages(text: str) -> list[dict[str, str]]:
