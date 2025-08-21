@@ -1,7 +1,6 @@
 import os
-import json
 import pytest
-from typing import List, Dict, Any
+from typing import List
 
 from eval_protocol.models import EvaluationRow, EvaluateResult, Message, MetricResult
 from eval_protocol.pytest import evaluation_test, AgentRolloutProcessor
@@ -12,42 +11,28 @@ from app.prompts import generate_draft_eval_messages
 skip_reason = "Skipping integration test: FIREWORKS_API_KEY not set"
 
 
-def _write_integration_dataset_if_missing(path: str) -> None:
-    if os.path.exists(path):
-        return
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+def generate_rows() -> List[EvaluationRow]:
+    """
+    Build input_rows directly from the JSONL dataset for the eval authoring agent.
+    """
     examples = [
         {"task": "validate JSON schema of an LLM response"},
         {"task": "evaluate code generation quality"},
         {"task": "write an eval for hallucination detection"},
     ]
-    with open(path, "w", encoding="utf-8") as f:
-        for ex in examples:
-            f.write(json.dumps(ex) + "\n")
-
-
-DATASET_PATH = os.path.join(os.path.dirname(__file__), "data", "tasks.jsonl")
-_write_integration_dataset_if_missing(DATASET_PATH)
-
-
-def eval_author_dataset_adapter(rows: List[Dict[str, Any]]) -> List[EvaluationRow]:
-    """
-    Adapts a simple list of tasks into EvaluationRow objects for the eval authoring agent.
-    """
-    dataset: List[EvaluationRow] = []
-    for row_data in rows:
+    rows: List[EvaluationRow] = []
+    for row_data in examples:
         task = row_data["task"]
         messages = generate_draft_eval_messages(task=task)
         ep_messages = [Message(role=m["role"], content=m["content"]) for m in messages]
-        dataset.append(EvaluationRow(messages=ep_messages))
-    return dataset
+        rows.append(EvaluationRow(messages=ep_messages))
+    return rows
 
 
 @pytest.mark.integration
 @pytest.mark.skipif(not os.getenv("FIREWORKS_API_KEY"), reason=skip_reason)
 @evaluation_test(
-    input_dataset=[DATASET_PATH],
-    dataset_adapter=eval_author_dataset_adapter,
+    input_rows=generate_rows(),
     completion_params=[{"model": "fireworks_ai/accounts/fireworks/models/gpt-oss-120b"}],
     rollout_processor=AgentRolloutProcessor(),
     mode="batch",  # Agent rollouts are typically batch mode

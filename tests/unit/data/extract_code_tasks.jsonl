@@ -1,5 +1,0 @@
-{"text": "\n```python\nprint('Hello, world!')\n```\n", "ground_truth": "print('Hello, world!')"}
-{"text": "print('Hello, world!')", "ground_truth": "print('Hello, world!')"}
-{"text": "\n```\nprint('Hello, world!')\n```\n", "ground_truth": "print('Hello, world!')"}
-{"text": "\nHere is the code:\n\n```python\nprint('Hello, world!')\n```\n", "ground_truth": "print('Hello, world!')"}
-{"text": "\nHm, maybe I should generate code like this:\n```python\nprint(\"test\")\n```\n\nBut actually, I should generate code like this:\n```python\nprint('Hello, world!')\n```\n", "ground_truth": "print('Hello, world!')"}

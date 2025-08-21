@@ -1,6 +1,5 @@
-import json
 import os
-from typing import Any, Dict, List
+from typing import List
 from eval_protocol import Message
 import pytest
 
@@ -48,10 +47,10 @@ But actually, I should generate code like this:
 """
 
 
-def _write_integration_dataset_if_missing(path: str) -> None:
-    if os.path.exists(path):
-        return
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+def generate_rows() -> List[EvaluationRow]:
+    """
+    Adapts a simple list of tasks into EvaluationRow objects for the eval authoring agent.
+    """
     examples = [
         {"text": TEXT_WITH_CODE_1, "ground_truth": GROUND_TRUTH},
         {"text": TEXT_WITH_CODE_2, "ground_truth": GROUND_TRUTH},
@@ -59,21 +58,8 @@ def _write_integration_dataset_if_missing(path: str) -> None:
         {"text": TEXT_WITH_CODE_4, "ground_truth": GROUND_TRUTH},
         {"text": TEXT_WITH_CODE_5, "ground_truth": GROUND_TRUTH},
     ]
-    with open(path, "w", encoding="utf-8") as f:
-        for ex in examples:
-            f.write(json.dumps(ex) + "\n")
-
-
-DATASET_PATH = os.path.join(os.path.dirname(__file__), "data", "extract_code_tasks.jsonl")
-_write_integration_dataset_if_missing(DATASET_PATH)
-
-
-def extract_code_dataset_adapter(rows: List[Dict[str, Any]]) -> List[EvaluationRow]:
-    """
-    Adapts a simple list of tasks into EvaluationRow objects for the eval authoring agent.
-    """
     dataset: List[EvaluationRow] = []
-    for row_data in rows:
+    for row_data in examples:
         text = row_data["text"]
         ground_truth = row_data["ground_truth"]
         messages = generate_extract_code_messages(text=text)
@@ -85,8 +71,7 @@ def extract_code_dataset_adapter(rows: List[Dict[str, Any]]) -> List[EvaluationR
 @pytest.mark.unit
 @pytest.mark.skipif(not os.getenv("FIREWORKS_API_KEY"), reason=skip_reason)
 @evaluation_test(
-    input_dataset=[DATASET_PATH],
-    dataset_adapter=extract_code_dataset_adapter,
+    input_rows=generate_rows(),
     completion_params=[{"model": "fireworks_ai/accounts/fireworks/models/gpt-oss-120b"}],
     rollout_processor=SingleTurnRolloutProcessor(),
     mode="pointwise",
