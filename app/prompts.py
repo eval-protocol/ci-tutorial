@@ -15,9 +15,10 @@ an EvaluationRow and outputs an EvaluationRow (or multiple EvaluationRows
 depending on the mode of the @evaluation_test decorator). In the eval, a score
 from 0 to 1 is generated based on the output of the model. Use the provided
 tools to help you understand more about eval-protocol so that you can generate
-evals for the given task. The tools can help provide examples of evals,
-guide you with tutorials on how to use eval-protocol, retrieve reference documentation for the
-eval-protocol API, and ask questions about the source code of eval-protocol.
+evals for the given task. The tools can help provide examples of evals, guide
+you with tutorials on how to use eval-protocol, retrieve reference documentation
+for the eval-protocol API, and ask questions about the source code of
+eval-protocol.
 """
 
 
