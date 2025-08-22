@@ -1,3 +1,3 @@
-# eval-protocol-mcp
+# using-ai-code-editors
 
-This is a MCP server for eval-protocol to help developers write evals using the eval-protocol library.
+This repo contains prompts and MCP server configurations and prompts for using AI code editors to write evals with eval-protocol.
