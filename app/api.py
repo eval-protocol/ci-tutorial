@@ -1,6 +1,8 @@
 import os
 from typing import Any, Callable, Dict, List
 
+from eval_protocol.models import EvaluationRow, Message
+from eval_protocol.pytest import AgentRolloutProcessor, RolloutProcessorConfig
 import litellm
 
 from .prompts import generate_draft_eval_messages, generate_extract_code_messages
@@ -43,7 +45,7 @@ def _extract_assistant_content(result: Any) -> str:
     raise ValueError("Unable to extract assistant content from completion result")
 
 
-def draft_eval(task: str) -> str:
+def draft_eval(task: str, model: str = "fireworks_ai/accounts/fireworks/models/qwen3-coder-480b-a35b-instruct") -> str:
     """
     Public API: Given a task, return code for an eval as a string.
 
@@ -59,9 +61,22 @@ def draft_eval(task: str) -> str:
     Returns assistant text content. Raise a clear error if no provider is configured.
     """
     messages = generate_draft_eval_messages(task)
-    litellm_model = os.getenv("LITELLM_MODEL", "fireworks_ai/accounts/fireworks/models/gpt-oss-120b")
-    result = litellm.completion(model=litellm_model, messages=messages)
-    return _extract_assistant_content(result)
+    mcp_config_path = os.path.join(os.path.dirname(__file__), "evalprotocol_mcp.json")
+    config = RolloutProcessorConfig(
+        completion_params={"model": model},
+        mcp_config_path=mcp_config_path,
+    )
+    ep_messages = [Message(role=m["role"], content=m["content"]) for m in messages]
+    agent_rollout_processor = AgentRolloutProcessor()
+    tasks = agent_rollout_processor([EvaluationRow(messages=ep_messages)], config)
+    result = tasks[0].result()
+    content = result.messages[-1].content
+    if isinstance(content, list):
+        text = content[0].text
+        return text
+    elif isinstance(content, str):
+        return content
+    raise ValueError(f"Content is not a string: {content}")
 
 
 def extract_code(text: str) -> str:

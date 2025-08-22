@@ -19,6 +19,10 @@ evals for the given task. The tools can help provide examples of evals, guide
 you with tutorials on how to use eval-protocol, retrieve reference documentation
 for the eval-protocol API, and ask questions about the source code of
 eval-protocol.
+
+GitHub source repos:
+- for the docs, see eval-protocol/eval-protocol
+- for the Python SDK, see eval-protocol/python-sdk
 """
 
 

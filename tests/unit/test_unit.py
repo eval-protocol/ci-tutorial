@@ -1,6 +1,6 @@
 import os
 from typing import List
-from eval_protocol import Message
+from eval_protocol.models import Message
 import pytest
 
 from eval_protocol.models import EvaluationRow, EvaluateResult, MetricResult
